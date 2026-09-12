@@ -287,6 +287,9 @@ p{margin:0 0 1em}
 .sos{display:inline-block; width:26px; color:var(--murekkep)}
 .sos svg{width:100%; fill:currentColor}
 .alt-serit{background:var(--bar); color:#cfcfcf; text-align:center; padding:20px 24px 24px}
+/* ⚠️ Mobilde sağ alt dock sabit duruyor; alt pay olmazsa imza onun altında kalıp
+   tıklanamıyor. Pay dock yüksekliğinden (2 düğme + boşluk + 12px) fazla olmalı. */
+@media (max-width:760px){ .alt-serit{padding-bottom:132px} }
 .alt-serit p{margin:0 0 12px; font-size:13px}
 
 /* ── Web4Medya imzası ────────────────────────────────────────
@@ -496,7 +499,10 @@ JS = r"""
     if (yukari) yukari.classList.toggle('gorun', y > 500);
 
     if (bildirim && !kapatildi) {
-      var ac = oran >= 0.5;
+      /* ⚠️ Sayfa dibinde GÖSTERME: sabit bildirim alt bilgideki Web4Medya imzasının üstünü
+         örtüyor ve mobilde imza tıklanamıyor. Dibe yaklaşınca gizlenince dock da yerine iner. */
+      var dibeKalan = toplam - y;
+      var ac = oran >= 0.5 && dibeKalan > 280;
       bildirim.classList.toggle('gorun', ac);
       document.body.classList.toggle('bildirim-acik', ac);
     }

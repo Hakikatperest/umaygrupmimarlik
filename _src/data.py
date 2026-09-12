@@ -42,7 +42,9 @@ ISLETME = {
     "linkedin": "",
 }
 
-WA_MESAJ = "Merhaba, projem için danışmanlık ve fiyat bilgisi almak istiyorum."
+WA_MESAJ = ("Merhaba, Projemle ilgili mimari hizmetleriniz hakkında detaylı bilgi almak ve "
+            "görüşme talep etmek istiyorum. Uygun olduğunuzda benimle iletişime geçmenizi "
+            "rica ederim. İyi çalışmalar.")
 
 # ─────────────────────────────────────────────────────────────
 # GİRİŞ — Vizyon & Yaklaşım  (kullanıcının metni, birebir)

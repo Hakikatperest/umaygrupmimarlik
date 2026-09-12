@@ -76,7 +76,10 @@
     if (yukari) yukari.classList.toggle('gorun', y > 500);
 
     if (bildirim && !kapatildi) {
-      var ac = oran >= 0.5;
+      /* ⚠️ Sayfa dibinde GÖSTERME: sabit bildirim alt bilgideki Web4Medya imzasının üstünü
+         örtüyor ve mobilde imza tıklanamıyor. Dibe yaklaşınca gizlenince dock da yerine iner. */
+      var dibeKalan = toplam - y;
+      var ac = oran >= 0.5 && dibeKalan > 280;
       bildirim.classList.toggle('gorun', ac);
       document.body.classList.toggle('bildirim-acik', ac);
     }
