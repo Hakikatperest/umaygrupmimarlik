@@ -34,11 +34,14 @@ CSS = r"""
   --bar:var(--kurum);
   /* Saç teli çizgiler mürekkebin şeffafından türetilir → her sıcak zeminde tutarlı durur. */
   --hat:rgba(59,60,57,.16);
+  /* Buton gövde kalınlığı (3B çıkıntı) — düz renk olmalı, alfa gradyan üzerinde bulanıyor */
+  --dg-kenar:#BEB7AA;      /* açık buton */
+  --dg-kenar-koyu:#22231F; /* koyu buton */
   /* Koyu şerit üzerindeki metin: soğuk gri yerine kremin şeffafı */
   --krem-yumusak:rgba(242,240,235,.78);
   --krem-silik:rgba(242,240,235,.55);
 
-  --ust-h:64px;
+  --ust-h:76px;
   --sinir:1240px;
 }
 
@@ -78,32 +81,14 @@ p{margin:0 0 1em}
   max-width:var(--sinir); margin:0 auto; padding:0 24px;
   min-height:var(--ust-h); display:flex; align-items:center; gap:24px;
 }
-.logo{text-decoration:none; display:block; color:var(--kurum)}
+.logo{text-decoration:none; display:flex; align-items:center}
+/* Logo: gerçek marka varlığı (saydam WebP), oran 3,12:1.
+   Yükseklik üst çubuğu belirler; genişlik orandan gelir. */
+.logo-im{display:block; width:auto; height:44px}
+.logo-buyuk{height:72px}
+@media (max-width:880px){ .logo-im{height:38px} }
+@media (max-width:420px){ .logo-im{height:32px} .logo-buyuk{height:56px} }
 
-/* ── Logo kilidi (işaret + UMAY / PROJE) ─────────────────────
-   Kimlikteki dizilim: çizgisel ev markası, yanında geniş harf aralıklı UMAY,
-   altında iki kısa çizgi arasında PROJE.                                    */
-.logo-kilit{display:inline-flex; align-items:center; gap:11px}
-.logo-im{width:auto; height:38px; flex:0 0 auto}
-.logo-yazi{display:flex; flex-direction:column; line-height:1}
-.logo-ad{
-  font-size:21px; font-weight:600; letter-spacing:.26em; text-indent:.26em;
-}
-.logo-alt{
-  display:flex; align-items:center; gap:6px; margin-top:4px;
-  font-size:8.5px; font-weight:500; letter-spacing:.42em; text-indent:.42em;
-}
-.logo-alt i{flex:1 1 auto; height:1px; background:currentColor; opacity:.55; min-width:10px}
-
-.logo-buyuk .logo-im{height:70px}
-.logo-buyuk .logo-ad{font-size:34px}
-.logo-buyuk .logo-alt{font-size:12px; margin-top:7px}
-
-@media (max-width:420px){
-  .logo-im{height:32px}
-  .logo-ad{font-size:18px; letter-spacing:.2em; text-indent:.2em}
-  .logo-alt{font-size:7.5px}
-}
 .menu{margin-left:auto}          /* ⚠️ mobilde .menu fixed olunca bu akıştan çıkar, aşağıda telafi var */
 .menu ul{display:flex; gap:34px; list-style:none; margin:0; padding:0}
 .menu a{
@@ -153,43 +138,30 @@ p{margin:0 0 1em}
   position:absolute; inset:0; display:grid; place-content:center; justify-items:center;
   pointer-events:none;
 }
-.mono-satir{display:flex; position:relative}  /* ::after ışığı buna göre konumlanır */
-.mono-harf{
-  display:block; overflow:hidden;              /* maske: harf buradan yükselir */
-  line-height:.86; padding:0 .012em;
+.mono-maske{display:block; overflow:hidden; position:relative}   /* logo buradan yükselir */
+.hero-logo{
+  display:block; width:min(46vw,620px); height:auto;
+  filter:drop-shadow(0 3px 34px rgba(0,0,0,.28));
+  transform:translateY(106%); opacity:0;
+  animation:logoYuksel 1.1s cubic-bezier(.16,.84,.28,1) .15s both;
 }
-.mono-harf i{
-  display:block; font-style:normal;
-  font-size:clamp(88px,20vw,220px); font-weight:800; letter-spacing:-.05em;
-  color:var(--krem); text-shadow:0 2px 40px rgba(0,0,0,.14);
-  transform:translateY(108%); filter:blur(9px);
-  animation:monoYuksel .95s cubic-bezier(.16,.84,.28,1) both;
-  animation-delay:var(--g,0ms);
+@media (max-width:620px){ .hero-logo{width:74vw} }
+@keyframes logoYuksel{
+  from{transform:translateY(106%); opacity:0}
+  to{transform:translateY(0); opacity:1}
 }
-@keyframes monoYuksel{
-  from{transform:translateY(108%); filter:blur(9px); opacity:0}
-  60%{filter:blur(0); opacity:1}
-  to{transform:translateY(0); filter:blur(0); opacity:.94}
-}
-/* harflerin üzerinden bir kez geçen ışık */
-.mono-satir::after{
+/* logonun üzerinden bir kez geçen ışık */
+.mono-maske::after{
   content:""; position:absolute; inset:0;
-  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.55) 50%,transparent 62%);
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.5) 50%,transparent 62%);
   mix-blend-mode:overlay; transform:translateX(-130%);
-  animation:monoParla 1.3s ease-out .85s both;
+  animation:monoParla 1.3s ease-out 1s both;
 }
 @keyframes monoParla{to{transform:translateX(130%)}}
-.mono-cizgi{
-  display:block; width:clamp(74px,13vw,150px); height:3px; background:var(--krem); margin-top:.22em;
-  transform:scaleX(0); transform-origin:center;
-  animation:monoCizgi .8s cubic-bezier(.16,.84,.28,1) .62s both; opacity:.9;
-}
-@keyframes monoCizgi{to{transform:scaleX(1)}}
 
 @media (prefers-reduced-motion:reduce){
-  .hero-gorsel img,.mono-satir::after{animation:none}
-  .mono-harf i{animation:none; transform:none; filter:none; opacity:.94}
-  .mono-cizgi{animation:none; transform:scaleX(1)}
+  .hero-gorsel img,.mono-maske::after{animation:none}
+  .hero-logo{animation:none; transform:none; opacity:1}
 }
 
 /* ── Başlıklar ───────────────────────────────────────────── */
@@ -213,15 +185,62 @@ p{margin:0 0 1em}
 .dugmeler{display:flex; flex-wrap:wrap; gap:12px; margin-top:26px}
 .bolum-bas ~ .dugmeler,.sinir.dar .dugmeler{justify-content:center}
 .orta-baglanti{text-align:center; margin:38px 0 0}
+/* ── Butonlar: fiziksel/3B his ───────────────────────────────
+   Katmanlar: üstte iç ışık + altta iç gölge (yüzey eğimi), `0 Npx 0` ile gövde
+   kalınlığı (çıkıntı), en altta yere düşen yumuşak gölge. Üzerine gelince yükselir,
+   basınca çıkıntı kısalır ve düğme içeri çöker — kalınlık sabit kalsaydı his kaybolurdu. */
 .dg{
   display:inline-block; padding:13px 26px; text-decoration:none;
   font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-  border:2px solid var(--cizgi); background:transparent; color:var(--murekkep);
-  transition:background .22s,color .22s,transform .22s;
+  border:2px solid var(--cizgi);
+  /* ⚠️ Saydam zemin greige üzerinde soluk kalıyordu — dock ve bildirimle aynı kural: NET BEYAZ. */
+  background:linear-gradient(180deg,#fff 0%,#F6F4F0 100%); color:var(--murekkep);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -3px 0 rgba(59,60,57,.07),
+    0 5px 0 var(--dg-kenar),
+    0 11px 20px rgba(59,60,57,.20);
+  transform:translateY(0);
+  transition:background .22s,color .22s,transform .14s cubic-bezier(.2,.8,.3,1),box-shadow .14s;
 }
-.dg:hover{background:var(--cizgi); color:var(--krem); transform:translateY(-2px)}
-.dg-koyu{background:var(--cizgi); color:var(--krem)}
-.dg-koyu:hover{background:transparent; color:var(--murekkep)}
+.dg:hover{
+  background:linear-gradient(180deg,#fff 0%,#EFECE6 100%);
+  transform:translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -3px 0 rgba(59,60,57,.07),
+    0 8px 0 var(--dg-kenar),
+    0 17px 28px rgba(59,60,57,.26);
+}
+.dg:active{
+  transform:translateY(4px);
+  box-shadow:
+    inset 0 2px 4px rgba(59,60,57,.22),
+    0 1px 0 var(--dg-kenar),
+    0 3px 8px rgba(59,60,57,.18);
+}
+.dg-koyu{
+  background:linear-gradient(180deg,#4A4B47 0%,var(--kurum) 100%); color:#fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -3px 0 rgba(0,0,0,.22),
+    0 5px 0 var(--dg-kenar-koyu),
+    0 11px 20px rgba(59,60,57,.34);
+}
+.dg-koyu:hover{
+  background:linear-gradient(180deg,#545550 0%,#40413D 100%); color:#fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -3px 0 rgba(0,0,0,.22),
+    0 8px 0 var(--dg-kenar-koyu),
+    0 17px 28px rgba(59,60,57,.40);
+}
+.dg-koyu:active{
+  box-shadow:
+    inset 0 2px 5px rgba(0,0,0,.35),
+    0 1px 0 var(--dg-kenar-koyu),
+    0 3px 8px rgba(59,60,57,.3);
+}
 @media (max-width:620px){
   .dg{white-space:normal; text-align:center; flex:1 1 100%}  /* dar ekranda taşmasın */
 }
@@ -291,10 +310,27 @@ p{margin:0 0 1em}
 .cta{background:var(--bar); color:var(--krem)}
 .cta .bolum-bas{color:var(--krem)}
 .cta-metin{text-align:center; max-width:720px; margin:0 auto; color:var(--krem-yumusak)}
-.cta .dg{border-color:var(--krem); color:var(--krem)}
-.cta .dg:hover{background:var(--krem); color:var(--bar)}
-.cta .dg-koyu{background:var(--krem); color:var(--bar)}
-.cta .dg-koyu:hover{background:transparent; color:var(--krem)}
+.cta .dg{
+  background:linear-gradient(180deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.04) 100%);
+  border-color:#fff; color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 5px 0 rgba(0,0,0,.35), 0 11px 20px rgba(0,0,0,.34);
+}
+.cta .dg:hover{
+  background:#fff; color:var(--bar);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 8px 0 rgba(0,0,0,.4), 0 17px 28px rgba(0,0,0,.4);
+}
+.cta .dg-koyu{
+  background:linear-gradient(180deg,#fff 0%,#E8E5DE 100%); color:var(--bar);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 5px 0 #9E988C, 0 11px 20px rgba(0,0,0,.38);
+}
+.cta .dg-koyu:hover{
+  background:linear-gradient(180deg,#fff 0%,#DDD9D0 100%); color:var(--bar);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 8px 0 #9E988C, 0 17px 28px rgba(0,0,0,.44);
+}
+.cta .dg:active,.cta .dg-koyu:active{
+  transform:translateY(4px);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.3), 0 1px 0 rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.3);
+}
 
 /* ── İletişim ────────────────────────────────────────────── */
 .iletisim{background:var(--zemin-ac)}
@@ -378,22 +414,36 @@ p{margin:0 0 1em}
   --renk:var(--bar);
   display:inline-flex; align-items:center; gap:10px;
   padding:12px 18px 12px 14px; border-radius:999px; text-decoration:none;
-  background:rgba(242,240,235,.82); color:var(--murekkep);
+  background:#fff; color:var(--murekkep);
   border:1px solid rgba(0,0,0,.09);
-  box-shadow:0 10px 28px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -3px 0 rgba(59,60,57,.06),
+    0 4px 0 var(--dg-kenar),
+    0 12px 26px rgba(59,60,57,.24);
   font-size:13px; font-weight:700; letter-spacing:.01em; white-space:nowrap;
   transition:transform .25s,box-shadow .25s,background .25s;
   position:relative; overflow:hidden;
-  -webkit-backdrop-filter:blur(14px) saturate(160%); backdrop-filter:blur(14px) saturate(160%);
 }
-.dock-dg:hover{transform:translateY(-3px); box-shadow:0 16px 36px rgba(0,0,0,.22); background:var(--krem)}
+.dock-dg:hover{
+  transform:translateY(-3px); background:#fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -3px 0 rgba(59,60,57,.06),
+    0 7px 0 var(--dg-kenar),
+    0 18px 34px rgba(59,60,57,.3);
+}
+.dock-dg:active{
+  transform:translateY(3px);
+  box-shadow:inset 0 2px 4px rgba(59,60,57,.2), 0 1px 0 var(--dg-kenar), 0 3px 8px rgba(59,60,57,.18);
+}
 .dock-ikon{
   width:30px; height:30px; flex:0 0 30px; border-radius:50%;
   display:grid; place-items:center; background:var(--renk); color:#fff;
 }
 .dock-ikon svg{width:17px; fill:currentColor}
 .dock-wa{--renk:#25D366}
-.dock-ara{--renk:var(--kurum)}
+.dock-ara{--renk:#1A73E8}
 /* nabız — dikkat çeker ama yormaz */
 .dock-ara .dock-ikon::after{
   content:""; position:absolute; width:30px; height:30px; border-radius:50%;
@@ -412,8 +462,9 @@ p{margin:0 0 1em}
 /* ── Çevrimiçi bildirimi (%50 kaydırmada) ────────────────── */
 .bildirim{
   position:fixed; right:18px; bottom:18px; z-index:75; width:min(330px,calc(100vw - 36px));
-  background:var(--krem); border:1px solid var(--hat); border-radius:14px;
-  box-shadow:0 22px 60px rgba(0,0,0,.2);
+  /* ⚠️ Net beyaz — krem zemin, krem bandın üzerinde eriyip belirginliğini yitiriyordu. */
+  background:#fff; border:1px solid rgba(0,0,0,.09); border-radius:14px;
+  box-shadow:0 22px 60px rgba(0,0,0,.26);
   padding:16px 40px 16px 18px;
   transform:translateY(24px) scale(.96); opacity:0; visibility:hidden;
   transition:transform .4s cubic-bezier(.2,.9,.3,1),opacity .4s,visibility .4s;

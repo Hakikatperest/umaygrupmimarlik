@@ -136,37 +136,30 @@ def ust(aktif):
     return """<a class="atla" href="#ana">İçeriğe atla</a>
 <header class="ust">
   <div class="ust-ic">
-    <a class="logo" href="%s" aria-label="%s">%s</a>
+    <a class="logo" href="%s">%s</a>
     <button class="hamburger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menüyü aç">
       <span></span><span></span><span></span>
     </button>
     <nav id="menu" class="menu" aria-label="Ana menü"><ul>%s</ul></nav>
   </div>
-</header>""" % (ic(), e(D.MARKA), logo_kilidi(), "".join(ogeler))
+</header>""" % (ic(), logo_kilidi(sizes="(max-width:520px) 132px, 176px"),
+                "".join(ogeler))
 
 
 # ─────────────────────────────────────────────────────────────
-# Logo — kimlik dosyasındaki çizgisel ev markasının SVG karşılığı.
-# Üst üste geçen iki form (birliktelik/denge) + açık form (gelişime açıklık) + kapı.
-# ⚠️ Bu bir YENİDEN ÇİZİM. Kullanıcı orijinal vektörü (SVG/AI) verirse bununla değiştir.
+# Logo — kullanıcının verdiği gerçek marka varlığı.
+# Kaynak images/umay-mimarlik.webp (aslında JPEG, beyaz zeminli); media.py beyazı saydama
+# çevirip kırpıyor ve assets/img/logo-w*.webp kayıpsız türevlerini üretiyor.
+# ⛔ Logoyu elle düzenleme; kaynak değişirse `python3 _src/media.py` yeter.
 # ─────────────────────────────────────────────────────────────
-def logo_isaret(sinif="logo-im"):
-    return ('<svg class="%s" viewBox="0 0 112 152" fill="none" stroke="currentColor" '
-            'stroke-width="4" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">'
-            '<path d="M2 58 L54 2 L108 52"/>'          # çatı
-            '<path d="M2 58 L2 150 L110 150"/>'        # sol uzun duvar + taban
-            '<path d="M22 48 L22 150"/>'               # üstteki ikinci form (overlap)
-            '<path d="M108 52 L108 150"/>'             # sağ duvar
-            '<path d="M42 112 L42 150 M42 112 L70 112 M70 112 L70 150"/>'  # kapı
-            '</svg>') % sinif
+LOGO_GEN = [160, 240, 320, 480, 640]
 
 
-def logo_kilidi(sinif=""):
-    """İşaret + UMAY / PROJE kilidi (kimlikteki dizilim)."""
-    return ('<span class="logo-kilit %s">%s'
-            '<span class="logo-yazi"><span class="logo-ad">UMAY</span>'
-            '<span class="logo-alt"><i></i>PROJE<i></i></span></span></span>') % (
-            sinif, logo_isaret())
+def logo_kilidi(sinif="", sizes="160px"):
+    srcset = ", ".join("%s %dw" % (ic("assets/img/logo-w%d.webp" % g), g) for g in LOGO_GEN)
+    return ('<img class="logo-im %s" src="%s" srcset="%s" sizes="%s" alt="%s" '
+            'width="1560" height="500" decoding="async">') % (
+        sinif, ic("assets/img/logo-w320.webp"), srcset, e(sizes), e(D.MARKA))
 
 
 def w4_imza():
@@ -204,7 +197,7 @@ def alt_bilgi():
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>
 </a>""" % (
         resim(D.ILETISIM_GORSEL, D.ILETISIM_ALT, "alt-gorsel", "100vw"),
-        logo_kilidi("logo-buyuk"),
+        logo_kilidi("logo-buyuk", sizes="(max-width:520px) 200px, 260px"),
         e(i["kisi"]), e(i["unvan"]),
         m(i["adres"]),
         duz(i["eposta"]), m(i["eposta"]),
@@ -303,7 +296,9 @@ def iskelet(anahtar, govde, ekstra_bas=""):
 <meta name="theme-color" content="#DAD5CC">
 <link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="%s">
-<link rel="icon" href="%s" type="image/svg+xml">
+<link rel="icon" href="%s" sizes="48x48">
+<link rel="icon" type="image/png" href="%s" sizes="192x192">
+<link rel="apple-touch-icon" href="%s">
 %s%s
 <script>document.documentElement.className+=' js';</script>
 </head>
@@ -323,7 +318,7 @@ def iskelet(anahtar, govde, ekstra_bas=""):
         e(D.MARKA), e(duz(s["baslik"])), e(duz(s["aciklama"])), kanonik,
         damga("assets/fonts/pjs-var-tr.woff2"),
         damga("assets/css/site.css"),
-        ic("favicon.svg"),
+        ic("favicon.ico"), ic("favicon-192.png"), ic("favicon-192.png"),
         jsonld(anahtar), ekstra_bas,
         ust(anahtar),
         govde,
@@ -338,18 +333,18 @@ def iskelet(anahtar, govde, ekstra_bas=""):
 # Bölümler
 # ─────────────────────────────────────────────────────────────
 def hero():
-    # Monogram harf harf sarılır: her harf kendi maskesinden yükselir (gecikmeler CSS'te).
-    harfler = "".join(
-        '<span class="mono-harf" style="--g:%dms"><i>%s</i></span>' % (i * 130, e(h))
-        for i, h in enumerate(D.MONOGRAM)
-    )
+    """Kahraman: üst çubuktaki logonun NET BEYAZ sürümü, maskeden yükselerek açılır."""
+    gen = [160, 240, 320, 480, 640, 900]
+    srcset = ", ".join("%s %dw" % (ic("assets/img/logo-beyaz-w%d.webp" % g), g) for g in gen)
     return """<section class="hero">
   %s
-  <span class="hero-mono" aria-hidden="true">
-    <span class="mono-satir">%s</span>
-    <span class="mono-cizgi"></span>
+  <span class="hero-mono">
+    <span class="mono-maske"><img class="hero-logo" src="%s" srcset="%s"
+      sizes="(max-width:620px) 74vw, min(46vw, 620px)" alt="%s"
+      width="1560" height="500" fetchpriority="high" decoding="async"></span>
   </span>
-</section>""" % (resim(D.HERO_GORSEL, D.HERO_ALT, "hero-gorsel", "100vw", oncelik=True), harfler)
+</section>""" % (resim(D.HERO_GORSEL, D.HERO_ALT, "hero-gorsel", "100vw", oncelik=True),
+                 ic("assets/img/logo-beyaz-w640.webp"), srcset, e(D.MARKA))
 
 
 def proje_bloklari(projeler, baslik=None):
@@ -541,17 +536,6 @@ def robots():
     return "User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n" % D.SITE
 
 
-def favicon():
-    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-            '<rect width="64" height="64" fill="#3B3C39"/>'
-            '<g fill="none" stroke="#F2F0EB" stroke-width="3.2" stroke-linecap="square">'
-            '<path d="M13 30 L32 10 L51 28"/>'
-            '<path d="M13 30 L13 54 L51 54"/>'
-            '<path d="M51 28 L51 54"/>'
-            '<path d="M27 42 L27 54 M27 42 L37 42 M37 42 L37 54"/>'
-            '</g></svg>')
-
-
 def sayfa_404():
     govde = """<section class="sayfa-bas dort">
   <div class="sinir dar">
@@ -604,7 +588,6 @@ def main():
 
     yaz("sitemap.xml", sitemap())
     yaz("robots.txt", robots())
-    yaz("favicon.svg", favicon())
     if not os.path.exists(os.path.join(KOK, ".nojekyll")):
         open(os.path.join(KOK, ".nojekyll"), "w").close()
 
