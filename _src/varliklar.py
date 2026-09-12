@@ -43,9 +43,13 @@ CSS = r"""
   --krem-yumusak:rgba(242,240,235,.78);
   --krem-silik:rgba(242,240,235,.55);
 
-  --ust-h:76px;
+  --ust-h:88px;
   --sinir:1240px;
 }
+
+/* Kaydırınca üst çubuk incelir. Değişken :root'ta olduğu için mobil menünün
+   `top` değeri ve logo yüksekliği kendiliğinden takip eder. */
+html.kaydi{--ust-h:64px}
 
 *,*::before,*::after{box-sizing:border-box}
 html{
@@ -77,56 +81,127 @@ p{margin:0 0 1em}
 /* ── Üst çubuk ───────────────────────────────────────────── */
 .ust{
   position:sticky; top:0; z-index:100;
-  background:var(--krem); border-bottom:3px solid var(--cizgi);
+  background:var(--krem);
+  /* ⚠️ .ust'e backdrop-filter VERME — mobil menü onun çocuğu; yığın bağlamı oluşunca
+     menü açılır ama linkler tıklanmaz. Derinlik gölgeyle veriliyor. */
+  border-bottom:1px solid var(--hat);
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
+  transition:box-shadow .32s ease, border-color .32s ease;
 }
+html.kaydi .ust{
+  border-bottom-color:transparent;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 10px 30px -8px rgba(59,60,57,.22);
+}
+/* markanın yeşilinden ince bir aksan çizgisi — slab yerine iplik */
+.ust::after{
+  content:""; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(72,88,77,.55) 22%,rgba(72,88,77,.55) 78%,transparent);
+  opacity:0; transition:opacity .32s ease;
+}
+html.kaydi .ust::after{opacity:1}
 .ust-ic{
-  max-width:var(--sinir); margin:0 auto; padding:0 24px;
-  min-height:var(--ust-h); display:flex; align-items:center; gap:24px;
+  max-width:var(--sinir); margin:0 auto; padding:0 28px;
+  min-height:var(--ust-h); display:flex; align-items:center; gap:28px;
+  transition:min-height .32s cubic-bezier(.4,0,.2,1);
 }
 .logo{text-decoration:none; display:flex; align-items:center}
 /* Logo: gerçek marka varlığı (saydam WebP), oran 3,12:1.
    Yükseklik üst çubuğu belirler; genişlik orandan gelir. */
-.logo-im{display:block; width:auto; height:44px}
+.logo-im{
+  display:block; width:auto; height:calc(var(--ust-h) * .50);
+  transition:height .32s cubic-bezier(.4,0,.2,1);
+}
+.logo:hover .logo-im{opacity:.82; transition:opacity .25s}
 .logo-buyuk{height:72px}
-@media (max-width:880px){ .logo-im{height:38px} }
-@media (max-width:420px){ .logo-im{height:32px} .logo-buyuk{height:56px} }
+@media (max-width:420px){ .logo-buyuk{height:56px} }
 
 .menu{margin-left:auto}          /* ⚠️ mobilde .menu fixed olunca bu akıştan çıkar, aşağıda telafi var */
 .menu ul{display:flex; gap:34px; list-style:none; margin:0; padding:0}
-.menu a{
-  position:relative; display:block; padding:22px 0;
-  font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
-  text-decoration:none; color:var(--murekkep);
+.menu ul{gap:38px}
+.menu ul a{
+  position:relative; display:block; padding:10px 2px;
+  font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
+  text-decoration:none; color:var(--sage-koyu);
+  transition:color .25s ease;
 }
-.menu a::before{
-  content:""; position:absolute; top:0; left:0; right:0; height:3px;
-  background:var(--cizgi); transform:scaleX(0); transition:transform .25s;
+.menu ul a:hover,.menu ul a.etkin{color:var(--murekkep)}
+/* ince alt çizgi ortadan açılır — 3px'lik slab yerine daha ölçülü bir işaret */
+.menu ul a::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:1.5px;
+  background:currentColor; transform:scaleX(0); transform-origin:center;
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
 }
-.menu a:hover::before,.menu a.etkin::before{transform:scaleX(1)}
+.menu ul a:hover::after,.menu ul a.etkin::after{transform:scaleX(1)}
+.menu ul a.etkin{font-weight:700}
 
 .hamburger{
-  display:none; margin-left:auto; width:42px; height:42px; padding:9px;
-  background:none; border:0; cursor:pointer; flex-direction:column; justify-content:space-between;
+  display:none; margin-left:auto; width:46px; height:46px; padding:14px 12px;
+  background:#fff; border:1px solid var(--hat); cursor:pointer;
+  flex-direction:column; justify-content:space-between; align-items:stretch;
+  box-shadow:0 2px 8px rgba(59,60,57,.08); transition:box-shadow .25s,transform .2s;
 }
-.hamburger span{display:block; height:2px; background:var(--murekkep); transition:transform .3s,opacity .2s}
-.hamburger[aria-expanded="true"] span:nth-child(1){transform:translateY(10px) rotate(45deg)}
-.hamburger[aria-expanded="true"] span:nth-child(2){opacity:0}
-.hamburger[aria-expanded="true"] span:nth-child(3){transform:translateY(-10px) rotate(-45deg)}
+.hamburger:active{transform:translateY(1px)}
+.hamburger span{
+  display:block; height:1.5px; background:var(--murekkep);
+  transition:transform .32s cubic-bezier(.4,0,.2,1),opacity .2s,width .32s;
+}
+.hamburger span:nth-child(2){width:70%; align-self:flex-end}
+.hamburger[aria-expanded="true"] span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger[aria-expanded="true"] span:nth-child(2){opacity:0; width:100%}
+.hamburger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
 
 @media (max-width:880px){
   .hamburger{display:flex}
   .menu{
     position:fixed; inset:var(--ust-h) 0 auto 0; margin-left:0;
-    background:var(--krem); border-bottom:3px solid var(--cizgi);
-    transform:translateY(-120%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+    background:var(--krem); border-bottom:1px solid var(--hat);
+    box-shadow:0 24px 48px -16px rgba(59,60,57,.34);
+    /* ⚠️ Yüzdelik öteleme panelin KENDİ yüksekliğine oranlıdır. Panel uzayınca
+       (ör. alta iletişim bloğu eklenince) -104% yetmeyip panel başlığın altına taşıyor
+       ve HAMBURGER TIKLANAMIYOR. Başlık yüksekliğini de düşerek kesin olarak çıkarıyoruz.
+       visibility ayrıca kapalıyken tıklamayı ve erişilebilirlik ağacını kesiyor. */
+    transform:translateY(calc(-100% - var(--ust-h)));
+    visibility:hidden;
+    transition:transform .42s cubic-bezier(.33,1,.68,1), visibility .42s;
     max-height:calc(100dvh - var(--ust-h)); overflow-y:auto;
   }
-  .menu.acik{transform:translateY(0)}
-  .menu ul{flex-direction:column; gap:0; padding:8px 24px 20px}
-  .menu a{padding:15px 0; font-size:13px; border-bottom:1px solid var(--hat)}
-  .menu a::before{display:none}
-  .menu a.etkin{font-weight:800}
+  .menu.acik{transform:translateY(0); visibility:visible}
+  .menu ul{flex-direction:column; gap:0; padding:6px 28px 10px}
+  .menu li{border-bottom:1px solid var(--hat)}
+  .menu li:last-child{border-bottom:0}
+  .menu ul a{
+    padding:18px 0; font-size:12.5px; letter-spacing:.22em; color:var(--murekkep);
+    display:flex; align-items:center; justify-content:space-between;
+    opacity:0; transform:translateY(-8px);   /* açılışta sırayla süzülür */
+    transition:opacity .32s ease,transform .32s ease,color .25s;
+  }
+  .menu.acik ul a{opacity:1; transform:none}
+  .menu.acik li:nth-child(1) a{transition-delay:.06s}
+  .menu.acik li:nth-child(2) a{transition-delay:.11s}
+  .menu.acik li:nth-child(3) a{transition-delay:.16s}
+  .menu.acik li:nth-child(4) a{transition-delay:.21s}
+  .menu.acik li:nth-child(5) a{transition-delay:.26s}
+  /* satır sonundaki ince ok, üzerine gelince uzar */
+  .menu ul a::after{
+    content:""; position:static; width:16px; height:1.5px; background:currentColor;
+    opacity:.35; transform:none;
+    transition:width .25s,opacity .25s;
+  }
+  .menu ul a:hover::after,.menu ul a.etkin::after{width:28px; opacity:1; transform:none}
+  .menu ul a.etkin{font-weight:700}
+
+  /* panel altındaki iletişim bloğu */
+  .menu-ilt{
+    display:flex; flex-direction:column; gap:10px;
+    padding:16px 28px 22px; border-top:1px solid var(--hat);
+    opacity:0; transform:translateY(-8px);
+    transition:opacity .32s ease .3s,transform .32s ease .3s;
+  }
+  .menu.acik .menu-ilt{opacity:1; transform:none}
+  .menu-ilt .dg{width:100%; text-align:center}
+  .menu-ilt small{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--sage-koyu)}
 }
+@media (min-width:881px){ .menu-ilt{display:none} }
 
 /* ── Kahraman ────────────────────────────────────────────── */
 .hero{position:relative; background:var(--greige); overflow:hidden}
@@ -401,9 +476,16 @@ p{margin:0 0 1em}
 .alt-kisi{font-weight:600; margin:0 0 14px}
 .alt-sat{margin:0 0 6px; color:var(--murekkep)}
 .alt-sat a{text-decoration:none; border-bottom:1px solid var(--hat)}
-.alt-sos{margin:18px 0 0}
-.sos{display:inline-block; width:26px; color:var(--murekkep)}
-.sos svg{width:100%; fill:currentColor}
+.alt-sos{margin:20px 0 0}
+.sos{
+  display:inline-flex; align-items:center; gap:9px; text-decoration:none;
+  padding:9px 16px 9px 11px; background:#fff; border:1px solid var(--hat);
+  color:var(--murekkep); font-size:13px; font-weight:600;
+  box-shadow:0 3px 10px rgba(59,60,57,.08);
+  transition:transform .22s,box-shadow .22s;
+}
+.sos:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(59,60,57,.16)}
+.sos svg{width:20px; height:20px; fill:currentColor; flex:0 0 20px}
 .alt-serit{background:var(--bar); color:var(--krem-yumusak); text-align:center; padding:20px 24px 24px}
 /* ⚠️ Mobilde sağ alt dock sabit duruyor; alt pay olmazsa imza onun altında kalıp
    tıklanamıyor. Pay dock yüksekliğinden (2 düğme + boşluk + 12px) fazla olmalı. */
@@ -606,6 +688,7 @@ JS = r"""
 
   /* ── Yukarı çık ───────────────────────────────────────── */
   var yukari = document.querySelector('.yukari');
+  var kok = document.documentElement;
 
   /* ── Çevrimiçi bildirimi (%50 kaydırma) ───────────────── */
   var bildirim = document.querySelector('.bildirim');
@@ -628,6 +711,11 @@ JS = r"""
     var y = window.pageYOffset || document.documentElement.scrollTop;
     var toplam = document.documentElement.scrollHeight - window.innerHeight;
     var oran = toplam > 0 ? y / toplam : 0;
+
+    /* Üst çubuk kaydırınca incelir + gölge kazanır.
+       ⚠️ Zemin HER DURUMDA opak krem — şeffaf yapıp JS'e bağlamak, betik gecikince
+       kahramanın üzerinde okunmaz logo bırakır. Burada yalnız yükseklik/gölge değişiyor. */
+    if (kok) kok.classList.toggle('kaydi', y > 24);
 
     if (yukari) yukari.classList.toggle('gorun', y > 500);
 

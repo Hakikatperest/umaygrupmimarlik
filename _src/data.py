@@ -38,7 +38,7 @@ ISLETME = {
     "adres_kisa": "Maltepe / İstanbul",
     "calisma": PH("Pazartesi–Cumartesi 09:00–18:00"),
     "harita_url": PH("Google Haritalar yol tarifi bağlantısı"),
-    "instagram": PH("https://instagram.com/..."),
+    "instagram": "https://www.instagram.com/umaygrupmimarlik/",
     "linkedin": "",
 }
 

@@ -50,6 +50,7 @@
 
   /* ── Yukarı çık ───────────────────────────────────────── */
   var yukari = document.querySelector('.yukari');
+  var kok = document.documentElement;
 
   /* ── Çevrimiçi bildirimi (%50 kaydırma) ───────────────── */
   var bildirim = document.querySelector('.bildirim');
@@ -72,6 +73,11 @@
     var y = window.pageYOffset || document.documentElement.scrollTop;
     var toplam = document.documentElement.scrollHeight - window.innerHeight;
     var oran = toplam > 0 ? y / toplam : 0;
+
+    /* Üst çubuk kaydırınca incelir + gölge kazanır.
+       ⚠️ Zemin HER DURUMDA opak krem — şeffaf yapıp JS'e bağlamak, betik gecikince
+       kahramanın üzerinde okunmaz logo bırakır. Burada yalnız yükseklik/gölge değişiyor. */
+    if (kok) kok.classList.toggle('kaydi', y > 24);
 
     if (yukari) yukari.classList.toggle('gorun', y > 500);
 
