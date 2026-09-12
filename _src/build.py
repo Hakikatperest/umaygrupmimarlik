@@ -26,6 +26,20 @@ IMG = os.path.join(KOK, "assets", "img")
 YIL = 2026
 PH_SAYAC = []
 
+# ⚠️ Site hem kök alan adından (umaygrupmimarlik.com) hem de GitHub Pages'in proje alt
+# yolundan (hakikatperest.github.io/umaygrupmimarlik/) açılabiliyor. Kök-göreli "/assets/..."
+# yolları alt yolda 404 veriyor ve sayfa çıplak metne dönüyor. Bu yüzden tüm iç yollar
+# sayfanın derinliğine göre GÖRELİ üretilir. 404.html istisna: GitHub onu her derinlikteki
+# uydurma URL için servis ettiği için göreli yol tutmaz, kök-mutlak kalır.
+ONEK = ""
+
+
+def ic(gorece=""):
+    """İç bağlantı/varlık yolu — geçerli sayfanın ön ekiyle."""
+    if not gorece:
+        return ONEK if ONEK else "./"
+    return ONEK + gorece
+
 
 # ─────────────────────────────────────────────────────────────
 # Yardımcılar
@@ -61,9 +75,9 @@ def damga(gorece):
     10 dakika ULAŞMAZ. İçerik değişmezse URL de değişmez."""
     yol = os.path.join(KOK, gorece)
     if not os.path.exists(yol):
-        return "/" + gorece
+        return ic(gorece)
     with open(yol, "rb") as f:
-        return "/%s?v=%s" % (gorece, hashlib.sha1(f.read()).hexdigest()[:8])
+        return "%s?v=%s" % (ic(gorece), hashlib.sha1(f.read()).hexdigest()[:8])
 
 
 def _turevler(kaynak):
@@ -87,13 +101,14 @@ def resim(kaynak, alt, sinif="", sizes="100vw", oncelik=False):
     if not gen:
         return ('<div class="gorsel-yok %s" role="img" aria-label="%s"><span>GÖRSEL<br>BEKLENİYOR</span></div>'
                 % (e(sinif), e(alt)))
-    srcset = ", ".join("/assets/img/%s-w%d.webp %dw" % (s, g, g) for g in gen)
+    srcset = ", ".join("%s %dw" % (ic("assets/img/%s-w%d.webp" % (s, g)), g) for g in gen)
     yukleme = ('fetchpriority="high" decoding="async"' if oncelik
                else 'loading="lazy" decoding="async"')
     return (
-        '<picture class="%s"><img src="/assets/img/%s-w%d.webp" srcset="%s" sizes="%s" '
+        '<picture class="%s"><img src="%s" srcset="%s" sizes="%s" '
         'alt="%s" width="%d" %s></picture>'
-        % (e(sinif), s, gen[-1], srcset, e(sizes), e(alt), gen[-1], yukleme)
+        % (e(sinif), ic("assets/img/%s-w%d.webp" % (s, gen[-1])), srcset, e(sizes),
+           e(alt), gen[-1], yukleme)
     )
 
 
@@ -113,7 +128,7 @@ def ust(aktif):
     ogeler = []
     for anahtar in D.MENU_SIRA:
         s = D.SAYFALAR[anahtar]
-        yol = "/" + s["yol"] + ("/" if s["yol"] else "")
+        yol = ic(s["yol"] + "/" if s["yol"] else "")
         ogeler.append(
             '<li><a href="%s"%s>%s</a></li>'
             % (yol, ' class="etkin" aria-current="page"' if anahtar == aktif else "", e(s["menu"]))
@@ -121,13 +136,13 @@ def ust(aktif):
     return """<a class="atla" href="#ana">İçeriğe atla</a>
 <header class="ust">
   <div class="ust-ic">
-    <a class="logo" href="/">%s</a>
+    <a class="logo" href="%s">%s</a>
     <button class="hamburger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menüyü aç">
       <span></span><span></span><span></span>
     </button>
     <nav id="menu" class="menu" aria-label="Ana menü"><ul>%s</ul></nav>
   </div>
-</header>""" % (e(D.MARKA_LOGO), "".join(ogeler))
+</header>""" % (ic(), e(D.MARKA_LOGO), "".join(ogeler))
 
 
 def w4_imza():
@@ -265,7 +280,7 @@ def iskelet(anahtar, govde, ekstra_bas=""):
 <meta name="theme-color" content="#e9eaea">
 <link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="%s">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="%s" type="image/svg+xml">
 %s%s
 <script>document.documentElement.className+=' js';</script>
 </head>
@@ -285,6 +300,7 @@ def iskelet(anahtar, govde, ekstra_bas=""):
         e(D.MARKA), e(duz(s["baslik"])), e(duz(s["aciklama"])), kanonik,
         damga("assets/fonts/pjs-var-tr.woff2"),
         damga("assets/css/site.css"),
+        ic("favicon.svg"),
         jsonld(anahtar), ekstra_bas,
         ust(anahtar),
         govde,
@@ -389,19 +405,19 @@ def sayfa_anasayfa():
     <h1 class="bolum-bas">%s</h1>
     <p class="ust-baslik">%s · %s</p>
     <div class="metin">%s</div>
-    <p class="dugmeler"><a class="dg" href="/hakkimda/">Hakkımda</a><a class="dg dg-koyu" href="/hizmetler/">Hizmetler</a></p>
+    <p class="dugmeler"><a class="dg" href="%shakkimda/">Hakkımda</a><a class="dg dg-koyu" href="%shizmetler/">Hizmetler</a></p>
   </div>
 </section>""" % (e(D.SAYFALAR["anasayfa"]["h1"]), e(D.ISLETME["unvan"]), e(D.ISLETME["kisi"]),
-                 giris_bloklari(kisa=True))
+                 giris_bloklari(kisa=True), ic(), ic())
         + proje_bloklari(D.PROJELER[:3], "Öne Çıkan Projeler.")
-        + '<p class="orta-baglanti"><a class="dg" href="/projeler/">Tüm Projeler</a></p>'
+        + '<p class="orta-baglanti"><a class="dg" href="%sprojeler/">Tüm Projeler</a></p>' % ic()
         + """<section class="hizmetler-bolum">
   <div class="sinir">
     <h2 class="bolum-bas">Uzmanlık Alanlarım.</h2>
     <div class="hizmet-akis">%s</div>
-    <p class="orta-baglanti"><a class="dg" href="/hizmetler/">Hizmet Detayları</a></p>
+    <p class="orta-baglanti"><a class="dg" href="%shizmetler/">Hizmet Detayları</a></p>
   </div>
-</section>""" % hizmet_bloklari(tam=False)
+</section>""" % (hizmet_bloklari(tam=False), ic())
         + neden_bloklari()
         + cta_serit()
     )
@@ -514,9 +530,9 @@ def sayfa_404():
   <div class="sinir dar">
     <h1 class="bolum-bas">Sayfa bulunamadı.</h1>
     <p class="cta-metin">Aradığınız sayfa taşınmış veya kaldırılmış olabilir.</p>
-    <p class="dugmeler"><a class="dg dg-koyu" href="/">Ana Sayfa</a><a class="dg" href="/iletisim/">İletişim</a></p>
+    <p class="dugmeler"><a class="dg dg-koyu" href="%s">Ana Sayfa</a><a class="dg" href="%siletisim/">İletişim</a></p>
   </div>
-</section>"""
+</section>""" % (ic(), ic())
     # 404 menüde yok; iskeleti anasayfa anahtarıyla kurup başlığı değiştiriyoruz.
     cikti = iskelet("anasayfa", govde)
     cikti = cikti.replace("<title>%s</title>" % e(duz(D.SAYFALAR["anasayfa"]["baslik"])),
@@ -548,11 +564,16 @@ def main():
         "iletisim/index.html": sayfa_iletisim,
         "404.html": sayfa_404,
     }
+    global ONEK
     toplam = 0
     for yol, fn in ciktilar.items():
+        derinlik = yol.count("/")
+        # 404 her derinlikteki URL için servis edilir → göreli yol tutmaz, kök-mutlak kalır.
+        ONEK = "/" if yol == "404.html" else "../" * derinlik
         n = yaz(yol, fn())
         toplam += n
-        print("  %-26s %6.1f KB" % (yol, n / 1024))
+        print("  %-26s onek=%-6s %6.1f KB" % (yol, repr(ONEK), n / 1024))
+    ONEK = ""
 
     yaz("sitemap.xml", sitemap())
     yaz("robots.txt", robots())

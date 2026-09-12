@@ -13,7 +13,7 @@ CSS = r"""
 /* ── Yazı tipi ───────────────────────────────────────────── */
 @font-face{
   font-family:'Plus Jakarta Sans';
-  src:url('/assets/fonts/pjs-var-tr.woff2') format('woff2-variations');
+  src:url('../fonts/pjs-var-tr.woff2') format('woff2-variations');
   font-weight:200 800; font-style:normal; font-display:swap;
 }
 
