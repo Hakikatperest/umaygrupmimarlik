@@ -24,8 +24,11 @@
   /* Saç teli çizgiler mürekkebin şeffafından türetilir → her sıcak zeminde tutarlı durur. */
   --hat:rgba(59,60,57,.16);
   /* Buton gövde kalınlığı (3B çıkıntı) — düz renk olmalı, alfa gradyan üzerinde bulanıyor */
-  --dg-kenar:#BEB7AA;      /* açık buton */
-  --dg-kenar-koyu:#22231F; /* koyu buton */
+  /* ⚠️ Gövde kenarları belirgin olmalı; açık tonlar greige zeminde kayboluyor. */
+  --dg-kenar:#AFA698;      /* açık buton */
+  --dg-kenar-koyu:#111309; /* koyu buton */
+  --koyu-1:#41443E;        /* koyu buton üst */
+  --koyu-2:#212420;        /* koyu buton alt */
   --mavi:#1A73E8;          /* arama eylemi — kullanıcı isteği */
   --mavi-kenar:#0F4FA8;
   /* Koyu şerit üzerindeki metin: soğuk gri yerine kremin şeffafı */
@@ -258,25 +261,25 @@ html.kaydi .ust::after{opacity:1}
 .dg{
   display:inline-block; padding:13px 26px; text-decoration:none;
   font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-  border:2px solid var(--cizgi);
+  border:2px solid #2B2D29;
   /* ⚠️ Saydam zemin greige üzerinde soluk kalıyordu — dock ve bildirimle aynı kural: NET BEYAZ. */
-  background:linear-gradient(180deg,#fff 0%,#F6F4F0 100%); color:var(--murekkep);
+  background:linear-gradient(180deg,#fff 0%,#F1EEE8 100%); color:#242622;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.95),
-    inset 0 -3px 0 rgba(59,60,57,.07),
-    0 5px 0 var(--dg-kenar),
-    0 11px 20px rgba(59,60,57,.20);
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -4px 0 rgba(59,60,57,.10),
+    0 6px 0 var(--dg-kenar),
+    0 14px 24px rgba(59,60,57,.28);
   transform:translateY(0);
   transition:background .22s,color .22s,transform .14s cubic-bezier(.2,.8,.3,1),box-shadow .14s;
 }
 .dg:hover{
-  background:linear-gradient(180deg,#fff 0%,#EFECE6 100%);
+  background:linear-gradient(180deg,#fff 0%,#E9E5DD 100%);
   transform:translateY(-3px);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.95),
-    inset 0 -3px 0 rgba(59,60,57,.07),
-    0 8px 0 var(--dg-kenar),
-    0 17px 28px rgba(59,60,57,.26);
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -4px 0 rgba(59,60,57,.10),
+    0 9px 0 var(--dg-kenar),
+    0 20px 32px rgba(59,60,57,.34);
 }
 .dg:active{
   transform:translateY(4px);
@@ -286,20 +289,21 @@ html.kaydi .ust::after{opacity:1}
     0 3px 8px rgba(59,60,57,.18);
 }
 .dg-koyu{
-  background:linear-gradient(180deg,#4A4B47 0%,var(--kurum) 100%); color:#fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    inset 0 -3px 0 rgba(0,0,0,.22),
-    0 5px 0 var(--dg-kenar-koyu),
-    0 11px 20px rgba(59,60,57,.34);
-}
-.dg-koyu:hover{
-  background:linear-gradient(180deg,#545550 0%,#40413D 100%); color:#fff;
+  background:linear-gradient(180deg,var(--koyu-1) 0%,var(--koyu-2) 100%); color:#fff;
+  border-color:#15170F;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.22),
-    inset 0 -3px 0 rgba(0,0,0,.22),
-    0 8px 0 var(--dg-kenar-koyu),
-    0 17px 28px rgba(59,60,57,.40);
+    inset 0 -4px 0 rgba(0,0,0,.3),
+    0 6px 0 var(--dg-kenar-koyu),
+    0 14px 26px rgba(33,36,32,.45);
+}
+.dg-koyu:hover{
+  background:linear-gradient(180deg,#4C4F49 0%,#2A2D28 100%); color:#fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.26),
+    inset 0 -4px 0 rgba(0,0,0,.3),
+    0 9px 0 var(--dg-kenar-koyu),
+    0 20px 34px rgba(33,36,32,.5);
 }
 .dg-ara{
   background:linear-gradient(180deg,#3B8BF0 0%,var(--mavi) 100%); color:#fff;
