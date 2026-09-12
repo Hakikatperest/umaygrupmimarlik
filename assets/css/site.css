@@ -474,7 +474,9 @@ html.kaydi .ust::after{opacity:1}
   transition:transform .22s,box-shadow .22s;
 }
 .sos:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(59,60,57,.16)}
-.sos svg{width:20px; height:20px; fill:currentColor; flex:0 0 20px}
+/* ⚠️ fill BURADA TANIMLANMAZ — ikon kendi marka degradesini <defs> içinden alıyor;
+   CSS'teki fill sunum özniteliğini ezip ikonu tek renge düşürürdü. */
+.sos svg{width:21px; height:21px; flex:0 0 21px}
 .alt-serit{background:var(--bar); color:var(--krem-yumusak); text-align:center; padding:20px 24px 24px}
 /* ⚠️ Mobilde sağ alt dock sabit duruyor; alt pay olmazsa imza onun altında kalıp
    tıklanamıyor. Pay dock yüksekliğinden (2 düğme + boşluk + 12px) fazla olmalı. */
