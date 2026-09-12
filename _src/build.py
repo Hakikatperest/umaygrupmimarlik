@@ -136,13 +136,37 @@ def ust(aktif):
     return """<a class="atla" href="#ana">İçeriğe atla</a>
 <header class="ust">
   <div class="ust-ic">
-    <a class="logo" href="%s">%s</a>
+    <a class="logo" href="%s" aria-label="%s">%s</a>
     <button class="hamburger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menüyü aç">
       <span></span><span></span><span></span>
     </button>
     <nav id="menu" class="menu" aria-label="Ana menü"><ul>%s</ul></nav>
   </div>
-</header>""" % (ic(), e(D.MARKA_LOGO), "".join(ogeler))
+</header>""" % (ic(), e(D.MARKA), logo_kilidi(), "".join(ogeler))
+
+
+# ─────────────────────────────────────────────────────────────
+# Logo — kimlik dosyasındaki çizgisel ev markasının SVG karşılığı.
+# Üst üste geçen iki form (birliktelik/denge) + açık form (gelişime açıklık) + kapı.
+# ⚠️ Bu bir YENİDEN ÇİZİM. Kullanıcı orijinal vektörü (SVG/AI) verirse bununla değiştir.
+# ─────────────────────────────────────────────────────────────
+def logo_isaret(sinif="logo-im"):
+    return ('<svg class="%s" viewBox="0 0 112 152" fill="none" stroke="currentColor" '
+            'stroke-width="4" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">'
+            '<path d="M2 58 L54 2 L108 52"/>'          # çatı
+            '<path d="M2 58 L2 150 L110 150"/>'        # sol uzun duvar + taban
+            '<path d="M22 48 L22 150"/>'               # üstteki ikinci form (overlap)
+            '<path d="M108 52 L108 150"/>'             # sağ duvar
+            '<path d="M42 112 L42 150 M42 112 L70 112 M70 112 L70 150"/>'  # kapı
+            '</svg>') % sinif
+
+
+def logo_kilidi(sinif=""):
+    """İşaret + UMAY / PROJE kilidi (kimlikteki dizilim)."""
+    return ('<span class="logo-kilit %s">%s'
+            '<span class="logo-yazi"><span class="logo-ad">UMAY</span>'
+            '<span class="logo-alt"><i></i>PROJE<i></i></span></span></span>') % (
+            sinif, logo_isaret())
 
 
 def w4_imza():
@@ -164,8 +188,7 @@ def alt_bilgi():
     return """<footer class="alt">
   %s
   <div class="alt-kart">
-    <p class="alt-logo">%s</p>
-    <span class="kural"></span>
+    <div class="alt-logo">%s</div>
     <p class="alt-kisi">%s<br>%s</p>
     <p class="alt-sat">%s</p>
     <p class="alt-sat"><a href="mailto:%s">%s</a></p>
@@ -181,7 +204,7 @@ def alt_bilgi():
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>
 </a>""" % (
         resim(D.ILETISIM_GORSEL, D.ILETISIM_ALT, "alt-gorsel", "100vw"),
-        e(D.MARKA_LOGO),
+        logo_kilidi("logo-buyuk"),
         e(i["kisi"]), e(i["unvan"]),
         m(i["adres"]),
         duz(i["eposta"]), m(i["eposta"]),
@@ -277,7 +300,7 @@ def iskelet(anahtar, govde, ekstra_bas=""):
 <meta property="og:description" content="%s">
 <meta property="og:url" content="%s">
 <meta property="og:locale" content="tr_TR">
-<meta name="theme-color" content="#e9eaea">
+<meta name="theme-color" content="#DAD5CC">
 <link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="%s">
 <link rel="icon" href="%s" type="image/svg+xml">
@@ -520,9 +543,13 @@ def robots():
 
 def favicon():
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-            '<rect width="64" height="64" fill="#111"/>'
-            '<text x="32" y="43" font-family="Helvetica,Arial,sans-serif" font-size="30" '
-            'font-weight="700" fill="#fff" text-anchor="middle">%s</text></svg>' % D.MONOGRAM)
+            '<rect width="64" height="64" fill="#3B3C39"/>'
+            '<g fill="none" stroke="#F2F0EB" stroke-width="3.2" stroke-linecap="square">'
+            '<path d="M13 30 L32 10 L51 28"/>'
+            '<path d="M13 30 L13 54 L51 54"/>'
+            '<path d="M51 28 L51 54"/>'
+            '<path d="M27 42 L27 54 M27 42 L37 42 M37 42 L37 54"/>'
+            '</g></svg>')
 
 
 def sayfa_404():
