@@ -228,7 +228,7 @@ def bildirim():
   <button class="bildirim-kapat" type="button" aria-label="Bildirimi kapat">&times;</button>
   <p class="bildirim-bas"><span class="nokta" aria-hidden="true"></span>Şu an çevrimiçiyiz.</p>
   <p>Arayın, projeniz hakkında konuşalım.</p>
-  <a class="dg dg-koyu" href="%s">Hemen Ara</a>
+  <a class="dg dg-ara" href="%s">Hemen Ara</a>
 </aside>""" % tel_link()
 
 
@@ -239,7 +239,7 @@ def cta_serit():
     <p class="cta-metin">%s</p>
     <p class="dugmeler">
       <a class="dg dg-koyu" href="%s" target="_blank" rel="noopener">WhatsApp ile İletişime Geç</a>
-      <a class="dg" href="%s">Hemen Ara</a>
+      <a class="dg dg-ara" href="%s">Hemen Ara</a>
     </p>
   </div>
 </section>""" % (e(D.CTA_BASLIK), e(D.CTA_METIN), wa_link(), tel_link())
@@ -333,7 +333,9 @@ def iskelet(anahtar, govde, ekstra_bas=""):
 # Bölümler
 # ─────────────────────────────────────────────────────────────
 def hero():
-    """Kahraman: üst çubuktaki logonun NET BEYAZ sürümü, maskeden yükselerek açılır."""
+    """Kahraman: üst çubuktaki logonun NET BEYAZ sürümü, maskeden yükselerek açılır.
+    Not: 2026-09-12'de kısa süre "UG" harflerine döndürüldü, kullanıcı logolu hâlin kalmasını istedi.
+    UG'ye dönmek gerekirse: mono-satir + mono-harf + mono-cizgi kalıbı (git geçmişinde)."""
     gen = [160, 240, 320, 480, 640, 900]
     srcset = ", ".join("%s %dw" % (ic("assets/img/logo-beyaz-w%d.webp" % g), g) for g in gen)
     return """<section class="hero">
@@ -511,7 +513,7 @@ def sayfa_iletisim():
     <dl class="ilt">%s</dl>
     <p class="dugmeler">
       <a class="dg dg-koyu" href="%s" target="_blank" rel="noopener">WhatsApp ile İletişime Geç</a>
-      <a class="dg" href="%s">Hemen Ara</a>
+      <a class="dg dg-ara" href="%s">Hemen Ara</a>
     </p>
   </div>
 </section>""" % (e(D.SAYFALAR["iletisim"]["h1"]), e(D.CTA_METIN), liste, wa_link(), tel_link())
